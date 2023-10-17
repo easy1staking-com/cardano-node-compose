@@ -4,7 +4,8 @@ RUN apt update && apt install -y curl
 
 WORKDIR /mithril
 RUN curl -L https://github.com/input-output-hk/mithril/releases/download/2337.0/mithril-2337.0-linux-x64.tar.gz | \
-    tar xzv -C /mithril
+    tar xzv -C /mithril && \
+    chmod +x mithril-*
 
 FROM ubuntu:20.04
 
