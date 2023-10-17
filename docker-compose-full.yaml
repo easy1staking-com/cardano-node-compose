@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  init-container:
+    container_name: init
+    build:
+      dockerfile: init-container/Dockerfile
+      context: .
+    environment:
+      - CARDANO_NODE_DATA_FOLDER=/data
+    volumes:
+      - ${CARDANO_NODE_DATA_FOLDER:-$PWD/cardano-node/data}:/data
+    restart: no
+  cardano-node:
+    container_name: cardano-node
+    image: inputoutput/cardano-node:8.1.2
+    restart: always
+    environment:
+      - CARDANO_NODE_SOCKET_PATH=/ipc/node.socket
+    command:
+      - run
+      - --database-path /data/db
+      - --socket-path /ipc/node.socket
+      - --topology
+      - /node-config/mainnet-topology.json
+      - --host-addr
+      - 0.0.0.0
+      - --port
+      - "30011"
+      - --config
+      - /node-config/mainnet-config.json
+      - --mempool-capacity-override
+      - "307200"
+    ports:
+      - "30011:30011"
+    volumes:
+      - ${CARDANO_NODE_DATA_FOLDER:-$PWD/cardano-node/data}:/data
+      - ${CARDANO_NODE_CONFIG_FOLDER:-$PWD/cardano-node/config}:/node-config
+      - ${CARDANO_NODE_IPC_FOLDER:-$PWD/cardano-node/ipc}:/ipc
+    depends_on:
+      init-container:
+        condition: service_completed_successfully
+    healthcheck:
+      test: bash -c '[ -S /ipc/node.socket ]'
+      interval: 3m
+      retries: 60
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
