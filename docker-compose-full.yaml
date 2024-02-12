@@ -20,13 +20,13 @@ services:
       - --database-path /data/db
       - --socket-path /ipc/node.socket
       - --topology
-      - /node-config/mainnet-topology.json
+      - /node-config/$NETWORK-topology.json
       - --host-addr
       - 0.0.0.0
       - --port
       - "30011"
       - --config
-      - /node-config/mainnet-config.json
+      - /node-config/$NETWORK-config.json
       - --mempool-capacity-override
       - "307200"
     ports:
