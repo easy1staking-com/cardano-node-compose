@@ -7,6 +7,8 @@ services:
       context: .
     environment:
       - CARDANO_NODE_DATA_FOLDER=/data
+      - AGGREGATOR_ENDPOINT=${AGGREGATOR_ENDPOINT}
+      - GENESIS_VERIFICATION_KEY=${GENESIS_VERIFICATION_KEY}
     volumes:
       - ${CARDANO_NODE_DATA_FOLDER:-$PWD/cardano-node/data}:/data
     restart: no
